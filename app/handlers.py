@@ -149,6 +149,8 @@ async def select_product_handler(message: Message, state: FSMContext):
     else:
         await message.answer("Список пуст.")
 
+
+# функции которые я решил не вставлять в финальную версию
     """ await state.set_state(Buying.number)
     if found_products:
         await message.answer("Выберите номер товара")
