@@ -10,13 +10,18 @@ import app.keyboards as kb
 
 router = Router()
 
+connection = get_db_connection()
+cursor = connection.cursor()
+
 class Buying(StatesGroup):
     city = State()
     product = State()
     number = State()
 
+class Register(StatesGroup):
+    nickname = State()
+
 def get_products():
-    connection = get_db_connection()
     if not connection:
         logging.error("Не удалось подключиться к базе данных")
         return []
@@ -26,9 +31,11 @@ def get_products():
             cursor.execute("SELECT id, product_name, price, store_name, city FROM catalog")
             products = cursor.fetchall()
             return products
+        
     except Exception as e:
         logging.error(f"Ошибка при выполнении запроса: {e}")
         return []
+    
     finally:
         connection.close()
 
@@ -45,8 +52,52 @@ async def cities(message: types.Message):
     await message.answer(cities_list)
 
 @router.message(CommandStart())
-async def command_start(message: types.Message):
-    await message.answer("⬇️", reply_markup=kb.main)
+async def command_start(message: Message, state: FSMContext):
+    try:
+        await state.set_state(Register.nickname)
+        user_id = message.from_user.id
+        cursor.execute('SELECT id FROM users WHERE id = %s', (user_id, ))
+        result = cursor.fetchone()
+
+        if result is None:
+            await message.answer("Введите произвольное имя")
+        else:
+            await message.answer("⏬", reply_markup=kb.main)
+
+    except Exception as e:
+        await message.answer(f"Произошла ошибка {e}")
+
+    finally:
+        if cursor:
+            cursor.close()
+
+@router.message(Register.nickname)
+async def handle_nickname_set(message: Message, state: FSMContext):
+    try:
+
+        await state.update_data(user_nickname=message.text)
+        data = await state.get_data()
+        user_nickname = data["user_nickname"]
+        user_id = message.from_user.id
+        cursor.execute('SELECT id FROM users WHERE id = %s', (user_id, ))
+        result = cursor.fetchone()
+
+        if result is None:
+            cursor.execute('INSERT INTO users (id, name) VALUES (%s, %s)', (user_id, user_nickname, ))
+            connection.commit()
+
+            await message.answer("⏬", reply_markup=kb.main)
+        else:
+            await message.answer("Вы уже вводили имя", reply_markup=kb.main)
+
+        await state.clear()
+        
+    except Exception as e:
+        await message.answer(f"Произошла ошибка: {e}")
+
+    finally:
+        if cursor:
+            cursor.close()
 
 @router.message(F.text == "Каталог")
 async def select_city(message: Message, state: FSMContext):
