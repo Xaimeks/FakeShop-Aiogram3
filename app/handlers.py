@@ -43,7 +43,6 @@ def get_products():
 async def work(message: types.Message):
     await message.answer("""
                          😉МЫ ГАРАНТИРУЕМ ВАМ БЕЗОПАСНОСТЬ И ОТКРЫТОСТЬ\n❤️ДАЖЕ В КРАЙНЕМ СЛУЧАЕ НЕ УГРОЖАЕМ РАСПРАВОЙ\n\nСТРОГО 17+ КУРАТОР @hkurator
-
                          """)
     
 @router.message(F.text == "Города")
