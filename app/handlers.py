@@ -47,6 +47,7 @@ async def work(message: types.Message):
     
 @router.message(F.text == "Города")
 async def cities(message: types.Message):
+    # PEP8 
     cities_list = "🏙️Доступные города:\n\nМосква\nПитер\nНовосибирск\nКазань\nЕкб\nУфа\nВолгоград\nВолжский\nСочи\nВоронеж\nПермь\nНижний Новгород\nЧелябинск\nКрасноярск"
     await message.answer(cities_list)
 
@@ -181,7 +182,3 @@ async def select_number_handler(message: Message, state: FSMContext):
                     break
     if not product_found:
         await message.answer("Товар с таким номером не найден.") """
-
-# Сделать оплату.
-# Сделать красивое оформления.
-# Добавить больше товара.
