@@ -132,38 +132,6 @@ async def select_product_handler(message: Message, state: FSMContext):
     else:
         await message.answer("Наркотики зло!")
 
-@router.message(Buying.number)
-async def select_number_handler(message: Message, state: FSMContext):
-    await state.update_data(number=message.text)
-    data = await state.get_data()
-
-    number = data["number"]
-    selected_product_name = data["selected_product_name"]
-    selected_product_price = data["selected_product_price"]
-    selected_product_store = data["selected_product_store"]
-
-    products = get_products()
-    product_found = False
-
-    if number.isdigit():
-        number = int(number)
-        for id, product_name, price, store_name, city in products:
-            if id == number:
-                if selected_product_name == product_name:
-                    product_found = True
-                    await message.answer(
-                        f"Вы выбрали товар под номером: {number}\n"
-                        f"Название: {selected_product_name}\n" 
-                        f"Цена: {selected_product_price}₽\n" 
-                        f"Магазин: {selected_product_store}"
-                    )
-                    await message.answer("Не употребляйте наркотики!")
-                    break
-    if not product_found:
-        await message.answer("Товар с таким номером не найден.")
-
-
-
 # Не вставлено в финальную версию
 """
 @router.message(Buying.number)
