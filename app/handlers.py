@@ -33,6 +33,7 @@ def get_products():
         
     except Exception as e:
         logging.error(f"Ошибка при выполнении запроса: {e}")
+        connection.rollback()
         return []
 
 @router.message(F.text == "Работа")
