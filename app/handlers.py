@@ -98,7 +98,7 @@ async def handle_city_input(message: Message, state: FSMContext):
 
 @router.message(Buying.product)
 async def select_product_handler(message: Message, state: FSMContext):
-    await state.update_data(product=message.text.strip())  # Убираем лишние пробелы
+    await state.update_data(product=message.text.strip())
     data = await state.get_data()
     product = data["product"]
     selected_city = data["city"]
@@ -118,12 +118,10 @@ async def select_product_handler(message: Message, state: FSMContext):
                 await message.answer(product_info, reply_markup=None)
                 await message.answer("Не употребляйте наркотики!")
 
-                # Сохраняем информацию о выбранном продукте
                 await state.update_data(selected_product_name=product_name)
                 await state.update_data(selected_product_price=price)
                 await state.update_data(selected_product_store=store_name)
 
-                # Переход к следующему состоянию для ввода номера товара
                 await state.set_state(Buying.number)
                 await message.answer("Введите номер товара:")
 
